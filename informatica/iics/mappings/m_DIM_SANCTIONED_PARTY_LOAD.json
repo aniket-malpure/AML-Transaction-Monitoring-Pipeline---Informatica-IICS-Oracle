@@ -1,0 +1,202 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_DIM_SANCTIONED_PARTY_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_DIM_SANCTIONED_PARTY_LOAD.xml (m_DIM_SANCTIONED_PARTY_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_STG_SANCTIONS",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "STG_SANCTIONS",
+        "filter": "STG_SANCTIONS.BATCH_ID = $$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "string",
+          "precision": 40,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_NORMALIZE_NAME",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "string",
+          "precision": 40,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME_NORM",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "LTRIM(RTRIM(REG_REPLACE(REG_REPLACE(UPPER(PARTY_NAME), '[^A-Z0-9 ]', ''), ' (LLC|LTD|INC|CORP|FZE|HOLDINGS)$', '')))"
+        }
+      ]
+    },
+    {
+      "name": "TGT_DIM_SANCTIONED_PARTY",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Upsert",
+        "object": "DIM_SANCTIONED_PARTY",
+        "truncateTarget": false
+      },
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "PARTY_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "varchar2",
+          "precision": 40,
+          "scale": 0
+        },
+        {
+          "name": "PARTY_NAME_NORM",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_STG_SANCTIONS",
+      "to": "EXP_NORMALIZE_NAME"
+    },
+    {
+      "from": "EXP_NORMALIZE_NAME",
+      "to": "TGT_DIM_SANCTIONED_PARTY"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "UPD_SANCTIONS.SDN_ID",
+      "to": "SDN_ID"
+    },
+    {
+      "from": "UPD_SANCTIONS.PARTY_NAME",
+      "to": "PARTY_NAME"
+    },
+    {
+      "from": "UPD_SANCTIONS.PARTY_TYPE",
+      "to": "PARTY_TYPE"
+    },
+    {
+      "from": "UPD_SANCTIONS.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "UPD_SANCTIONS.LIST_SOURCE",
+      "to": "LIST_SOURCE"
+    },
+    {
+      "from": "UPD_SANCTIONS.PARTY_NAME_NORM",
+      "to": "PARTY_NAME_NORM"
+    }
+  ]
+}

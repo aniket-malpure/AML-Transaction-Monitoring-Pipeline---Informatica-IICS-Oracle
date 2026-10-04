@@ -1,0 +1,182 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_STG_COUNTRY_RISK_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_STG_COUNTRY_RISK_LOAD.xml (m_STG_COUNTRY_RISK_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_NAME",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_country_risk",
+      "type": "Source",
+      "connection": "CONN_FF_AML_INBOUND",
+      "properties": {
+        "format": {
+          "type": "Delimited",
+          "delimiter": "|",
+          "headerLines": 1,
+          "textQualifier": "None"
+        },
+        "fileDirectory": "$$SRC_FILE_DIR/aml/inbound",
+        "fileName": "country_risk_$$BUSINESS_DATE.dat"
+      },
+      "fields": [
+        {
+          "name": "COUNTRY_CODE_IN",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_TIER_IN",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_STANDARDIZE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "COUNTRY_CODE_IN",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "RISK_TIER_IN",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "UPPER(COUNTRY_CODE_IN)"
+        },
+        {
+          "name": "RISK_TIER",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "UPPER(RISK_TIER_IN)"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$SRC_FILE_NAME"
+        }
+      ]
+    },
+    {
+      "name": "TGT_STG_COUNTRY_RISK",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "STG_COUNTRY_RISK",
+        "truncateTarget": true
+      },
+      "fields": [
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "RISK_TIER",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_country_risk",
+      "to": "EXP_STANDARDIZE"
+    },
+    {
+      "from": "EXP_STANDARDIZE",
+      "to": "TGT_STG_COUNTRY_RISK"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_STANDARDIZE.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.RISK_TIER",
+      "to": "RISK_TIER"
+    },
+    {
+      "from": "EXP_STANDARDIZE.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.SRC_FILE_NAME",
+      "to": "SRC_FILE_NAME"
+    }
+  ]
+}

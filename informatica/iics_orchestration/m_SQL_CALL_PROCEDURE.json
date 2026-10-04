@@ -1,0 +1,41 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_SQL_CALL_PROCEDURE",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Generic one-row mapping that runs a PL/SQL call through a SQL transformation. Used by the taskflow for steps whose logic lives in the database (staging validation, SCD2, rules).",
+  "parameters": [
+    { "name": "$$PROC_CALL", "type": "string", "usage": "In-Out", "defaultValue": "NULL" },
+    { "name": "$$BATCH_ID",  "type": "integer", "usage": "In-Out", "defaultValue": "0" }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_DUAL",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": { "sourceType": "Query", "query": "SELECT $$BATCH_ID AS BATCH_ID FROM DUAL" },
+      "fields": [ { "name": "BATCH_ID", "type": "decimal", "precision": 15, "scale": 0 } ]
+    },
+    {
+      "name": "SQL_RUN_PROC",
+      "type": "SQL",
+      "properties": {
+        "sqlType": "SQL Query",
+        "connection": "CONN_ORA_AML_DW",
+        "query": "BEGIN $$PROC_CALL; END;",
+        "onSqlError": "Fail mapping"
+      },
+      "fields": [ { "name": "BATCH_ID", "type": "decimal", "precision": 15, "scale": 0, "portType": "INPUT/OUTPUT" } ]
+    },
+    {
+      "name": "TGT_NULL",
+      "type": "Target",
+      "connection": "CONN_FF_AML_OUTBOUND",
+      "properties": { "operation": "Insert", "fileDirectory": "$$TGT_FILE_DIR", "fileName": "proc_call_$$BATCH_ID.log" },
+      "fields": [ { "name": "BATCH_ID", "type": "string", "precision": 15, "scale": 0 } ]
+    }
+  ],
+  "links": [
+    { "from": "SRC_DUAL", "to": "SQL_RUN_PROC" },
+    { "from": "SQL_RUN_PROC", "to": "TGT_NULL" }
+  ]
+}

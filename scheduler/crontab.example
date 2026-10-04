@@ -1,0 +1,11 @@
+# AML nightly chain (server time America/New_York).
+# Core banking extracts land by ~01:00; the chain starts at 02:15 for the
+# previous business date. A failed night is restarted by rerunning the same
+# command: completed steps are skipped automatically.
+#
+# m  h  dom mon dow  command
+15 2  *   *   *    /opt/aml/scripts/run_aml_batch.sh -m IICS >> /opt/aml/logs/cron.log 2>&1
+
+# Auto-retry once at 05:30 if the 02:15 run failed (no-op if it succeeded:
+# start_batch refuses a date that already SUCCEEDED, exit 1 is just logged).
+30 5  *   *   *    /opt/aml/scripts/run_aml_batch.sh -m IICS >> /opt/aml/logs/cron.log 2>&1 || true

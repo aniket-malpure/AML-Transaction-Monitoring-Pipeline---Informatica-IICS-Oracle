@@ -1,0 +1,391 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_OUT_AML_ALERT_EXTRACT",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_OUT_AML_ALERT_EXTRACT.xml (m_OUT_AML_ALERT_EXTRACT)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$TGT_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_V_ALERT_EXTRACT",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "V_ALERT_EXTRACT",
+        "filter": "V_ALERT_EXTRACT.BATCH_ID = $$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "ALERT_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CASE_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RULE_CODE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "SEVERITY",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_SCORE",
+          "type": "decimal",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TOTAL_AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ALERT_REASON",
+          "type": "string",
+          "precision": 1000,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "SRT_BY_PRIORITY",
+      "type": "Sorter",
+      "properties": {
+        "sortKeys": [
+          {
+            "field": "RISK_SCORE",
+            "order": "DESC"
+          },
+          {
+            "field": "ALERT_ID",
+            "order": "ASC"
+          }
+        ],
+        "distinct": false
+      },
+      "fields": [
+        {
+          "name": "ALERT_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CASE_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RULE_CODE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "SEVERITY",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_SCORE",
+          "type": "decimal",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TOTAL_AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ALERT_REASON",
+          "type": "string",
+          "precision": 1000,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_FORMAT",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "ALERT_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CASE_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RULE_CODE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "SEVERITY",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_SCORE",
+          "type": "decimal",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TOTAL_AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ALERT_REASON",
+          "type": "string",
+          "precision": 1000,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "EXTRACT_TS",
+          "type": "string",
+          "precision": 19,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS')"
+        }
+      ]
+    },
+    {
+      "name": "TGT_aml_alerts_extract",
+      "type": "Target",
+      "connection": "CONN_FF_AML_OUTBOUND",
+      "properties": {
+        "operation": "Insert",
+        "fileDirectory": "$$TGT_FILE_DIR/aml/outbound",
+        "fileName": "aml_alerts_$$BUSINESS_DATE.csv",
+        "header": true
+      },
+      "fields": [
+        {
+          "name": "ALERT_ID",
+          "type": "string",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "CASE_ID",
+          "type": "string",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "RULE_CODE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "SEVERITY",
+          "type": "string",
+          "precision": 10,
+          "scale": 0
+        },
+        {
+          "name": "RISK_SCORE",
+          "type": "string",
+          "precision": 3,
+          "scale": 0
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "TOTAL_AMOUNT",
+          "type": "string",
+          "precision": 18,
+          "scale": 0
+        },
+        {
+          "name": "ALERT_REASON",
+          "type": "string",
+          "precision": 1000,
+          "scale": 0
+        },
+        {
+          "name": "EXTRACT_TS",
+          "type": "string",
+          "precision": 19,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_V_ALERT_EXTRACT",
+      "to": "SRT_BY_PRIORITY"
+    },
+    {
+      "from": "SRT_BY_PRIORITY",
+      "to": "EXP_FORMAT"
+    },
+    {
+      "from": "EXP_FORMAT",
+      "to": "TGT_aml_alerts_extract"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_FORMAT.ALERT_ID",
+      "to": "ALERT_ID"
+    },
+    {
+      "from": "EXP_FORMAT.CASE_ID",
+      "to": "CASE_ID"
+    },
+    {
+      "from": "EXP_FORMAT.RULE_CODE",
+      "to": "RULE_CODE"
+    },
+    {
+      "from": "EXP_FORMAT.SEVERITY",
+      "to": "SEVERITY"
+    },
+    {
+      "from": "EXP_FORMAT.RISK_SCORE",
+      "to": "RISK_SCORE"
+    },
+    {
+      "from": "EXP_FORMAT.ACCOUNT_ID",
+      "to": "ACCOUNT_ID"
+    },
+    {
+      "from": "EXP_FORMAT.CUSTOMER_ID",
+      "to": "CUSTOMER_ID"
+    },
+    {
+      "from": "EXP_FORMAT.TOTAL_AMOUNT",
+      "to": "TOTAL_AMOUNT"
+    },
+    {
+      "from": "EXP_FORMAT.ALERT_REASON",
+      "to": "ALERT_REASON"
+    },
+    {
+      "from": "EXP_FORMAT.EXTRACT_TS",
+      "to": "EXTRACT_TS"
+    }
+  ]
+}

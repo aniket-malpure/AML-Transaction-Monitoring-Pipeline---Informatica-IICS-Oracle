@@ -1,0 +1,126 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_DIM_COUNTRY_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_DIM_COUNTRY_LOAD.xml (m_DIM_COUNTRY_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_STG_COUNTRY_RISK",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "STG_COUNTRY_RISK",
+        "filter": "STG_COUNTRY_RISK.BATCH_ID = $$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_TIER",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "LKP_DIM_COUNTRY",
+      "type": "Lookup",
+      "properties": {
+        "lookupObject": "DIM_COUNTRY",
+        "lookupCondition": "COUNTRY_CODE = IN_COUNTRY_CODE",
+        "multipleMatches": "Use First Value",
+        "cache": true,
+        "connection": "CONN_ORA_AML_DW"
+      },
+      "fields": [
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "RISK_TIER",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LKP_COUNTRY_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "TGT_DIM_COUNTRY",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Data Driven",
+        "dataDrivenCondition": "IIF(ISNULL(LKP_COUNTRY_KEY), DD_INSERT, DD_UPDATE)",
+        "object": "DIM_COUNTRY",
+        "truncateTarget": false
+      },
+      "fields": [
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "RISK_TIER",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_STG_COUNTRY_RISK",
+      "to": "LKP_DIM_COUNTRY"
+    },
+    {
+      "from": "LKP_DIM_COUNTRY",
+      "to": "TGT_DIM_COUNTRY"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "UPD_COUNTRY.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "UPD_COUNTRY.RISK_TIER",
+      "to": "RISK_TIER"
+    }
+  ]
+}

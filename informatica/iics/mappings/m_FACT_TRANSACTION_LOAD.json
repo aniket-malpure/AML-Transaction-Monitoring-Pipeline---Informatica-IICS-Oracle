@@ -1,0 +1,356 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_FACT_TRANSACTION_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_FACT_TRANSACTION_LOAD.xml (m_FACT_TRANSACTION_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_STG_TRANSACTION",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "STG_TRANSACTION",
+        "sourceType": "Query",
+        "query": "SELECT S.TXN_ID, TO_DATE(S.TXN_TS,'YYYY-MM-DD HH24:MI:SS'), A.ACCOUNT_KEY, C.CUSTOMER_KEY, NVL(T.TXN_TYPE_KEY,-1), NVL(K.COUNTRY_KEY,-1), S.DIRECTION, TO_NUMBER(S.AMOUNT), S.COUNTERPARTY_NAME FROM STG_TRANSACTION S JOIN DIM_ACCOUNT A ON A.ACCOUNT_ID=S.ACCOUNT_ID JOIN DIM_CUSTOMER C ON C.CUSTOMER_ID=A.CUSTOMER_ID AND C.IS_CURRENT='Y' LEFT JOIN DIM_TXN_TYPE T ON T.TXN_TYPE_CODE=S.TXN_TYPE LEFT JOIN DIM_COUNTRY K ON K.COUNTRY_CODE=S.COUNTERPARTY_COUNTRY WHERE S.BATCH_ID=$$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TS",
+          "type": "date/time",
+          "precision": 19,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TYPE_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CP_COUNTRY_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DIRECTION",
+          "type": "string",
+          "precision": 2,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_DERIVE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TS",
+          "type": "date/time",
+          "precision": 19,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TYPE_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CP_COUNTRY_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DIRECTION",
+          "type": "string",
+          "precision": 2,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "SIGNED_AMOUNT",
+          "type": "decimal",
+          "precision": 18,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "IIF(DIRECTION = 'DR', -1 * AMOUNT, AMOUNT)"
+        },
+        {
+          "name": "TXN_DATE_KEY",
+          "type": "integer",
+          "precision": 8,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "TO_INTEGER(TO_CHAR(TXN_TS, 'YYYYMMDD'))"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "LOAD_TS",
+          "type": "date/time",
+          "precision": 29,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "SESSSTARTTIME"
+        }
+      ]
+    },
+    {
+      "name": "TGT_FACT_TRANSACTION",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "FACT_TRANSACTION",
+        "truncateTarget": false,
+        "advanced": {
+          "loadMode": "Bulk"
+        }
+      },
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "TXN_TS",
+          "type": "date",
+          "precision": 19,
+          "scale": 0
+        },
+        {
+          "name": "ACCOUNT_KEY",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_KEY",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "TXN_TYPE_KEY",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "CP_COUNTRY_KEY",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "DIRECTION",
+          "type": "varchar2",
+          "precision": 2,
+          "scale": 0
+        },
+        {
+          "name": "AMOUNT",
+          "type": "number",
+          "precision": 18,
+          "scale": 0
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "SIGNED_AMOUNT",
+          "type": "number",
+          "precision": 18,
+          "scale": 0
+        },
+        {
+          "name": "TXN_DATE_KEY",
+          "type": "number",
+          "precision": 8,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "LOAD_TS",
+          "type": "date",
+          "precision": 19,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_STG_TRANSACTION",
+      "to": "EXP_DERIVE"
+    },
+    {
+      "from": "EXP_DERIVE",
+      "to": "TGT_FACT_TRANSACTION"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_DERIVE.TXN_ID",
+      "to": "TXN_ID"
+    },
+    {
+      "from": "EXP_DERIVE.TXN_TS",
+      "to": "TXN_TS"
+    },
+    {
+      "from": "EXP_DERIVE.ACCOUNT_KEY",
+      "to": "ACCOUNT_KEY"
+    },
+    {
+      "from": "EXP_DERIVE.CUSTOMER_KEY",
+      "to": "CUSTOMER_KEY"
+    },
+    {
+      "from": "EXP_DERIVE.TXN_TYPE_KEY",
+      "to": "TXN_TYPE_KEY"
+    },
+    {
+      "from": "EXP_DERIVE.CP_COUNTRY_KEY",
+      "to": "CP_COUNTRY_KEY"
+    },
+    {
+      "from": "EXP_DERIVE.DIRECTION",
+      "to": "DIRECTION"
+    },
+    {
+      "from": "EXP_DERIVE.AMOUNT",
+      "to": "AMOUNT"
+    },
+    {
+      "from": "EXP_DERIVE.COUNTERPARTY_NAME",
+      "to": "COUNTERPARTY_NAME"
+    },
+    {
+      "from": "EXP_DERIVE.SIGNED_AMOUNT",
+      "to": "SIGNED_AMOUNT"
+    },
+    {
+      "from": "EXP_DERIVE.TXN_DATE_KEY",
+      "to": "TXN_DATE_KEY"
+    },
+    {
+      "from": "EXP_DERIVE.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "EXP_DERIVE.LOAD_TS",
+      "to": "LOAD_TS"
+    }
+  ]
+}

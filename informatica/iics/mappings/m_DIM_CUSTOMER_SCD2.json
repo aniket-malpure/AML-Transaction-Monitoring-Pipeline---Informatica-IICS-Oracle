@@ -1,0 +1,358 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_DIM_CUSTOMER_SCD2",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_DIM_CUSTOMER_SCD2.xml (m_DIM_CUSTOMER_SCD2)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_STG_CUSTOMER",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "STG_CUSTOMER",
+        "filter": "STG_CUSTOMER.BATCH_ID = $$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_ROW_HASH",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ROW_HASH",
+          "type": "string",
+          "precision": 64,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "MD5(CUSTOMER_NAME || '|' || KYC_RISK_RATING || '|' || PEP_FLAG || '|' || COUNTRY_CODE)"
+        }
+      ]
+    },
+    {
+      "name": "LKP_DIM_CUSTOMER_CURRENT",
+      "type": "Lookup",
+      "properties": {
+        "lookupObject": "DIM_CUSTOMER",
+        "lookupCondition": "CUSTOMER_ID = IN_CUSTOMER_ID",
+        "multipleMatches": "Return Any",
+        "cache": true,
+        "connection": "CONN_ORA_AML_DW",
+        "lookupSqlOverride": "SELECT CUSTOMER_KEY AS LKP_CUSTOMER_KEY, ROW_HASH AS LKP_ROW_HASH, CUSTOMER_ID FROM DIM_CUSTOMER WHERE IS_CURRENT = 'Y'"
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ROW_HASH",
+          "type": "string",
+          "precision": 64,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LKP_CUSTOMER_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT"
+        },
+        {
+          "name": "LKP_ROW_HASH",
+          "type": "string",
+          "precision": 64,
+          "scale": 0,
+          "portType": "OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "RTR_NEW_OR_CHANGED",
+      "type": "Router",
+      "properties": {
+        "outputGroups": [
+          {
+            "name": "NEW_CUSTOMER",
+            "condition": "ISNULL(LKP_CUSTOMER_KEY)"
+          },
+          {
+            "name": "CHANGED_CUSTOMER",
+            "condition": "NOT ISNULL(LKP_CUSTOMER_KEY) AND ROW_HASH != LKP_ROW_HASH"
+          },
+          {
+            "name": "DEFAULT",
+            "condition": null
+          }
+        ]
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ROW_HASH",
+          "type": "string",
+          "precision": 64,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LKP_CUSTOMER_KEY",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LKP_ROW_HASH",
+          "type": "string",
+          "precision": 64,
+          "scale": 0,
+          "portType": "INPUT"
+        }
+      ]
+    },
+    {
+      "name": "TGT_DIM_CUSTOMER",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "DIM_CUSTOMER",
+        "truncateTarget": false
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "varchar2",
+          "precision": 10,
+          "scale": 0
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "varchar2",
+          "precision": 1,
+          "scale": 0
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "ROW_HASH",
+          "type": "varchar2",
+          "precision": 64,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_STG_CUSTOMER",
+      "to": "EXP_ROW_HASH"
+    },
+    {
+      "from": "EXP_ROW_HASH",
+      "to": "LKP_DIM_CUSTOMER_CURRENT"
+    },
+    {
+      "from": "LKP_DIM_CUSTOMER_CURRENT",
+      "to": "RTR_NEW_OR_CHANGED"
+    },
+    {
+      "from": "RTR_NEW_OR_CHANGED",
+      "to": "TGT_DIM_CUSTOMER"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "UPD_SCD2.CUSTOMER_ID",
+      "to": "CUSTOMER_ID"
+    },
+    {
+      "from": "UPD_SCD2.CUSTOMER_NAME",
+      "to": "CUSTOMER_NAME"
+    },
+    {
+      "from": "UPD_SCD2.KYC_RISK_RATING",
+      "to": "KYC_RISK_RATING"
+    },
+    {
+      "from": "UPD_SCD2.PEP_FLAG",
+      "to": "PEP_FLAG"
+    },
+    {
+      "from": "UPD_SCD2.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "UPD_SCD2.ROW_HASH",
+      "to": "ROW_HASH"
+    }
+  ]
+}

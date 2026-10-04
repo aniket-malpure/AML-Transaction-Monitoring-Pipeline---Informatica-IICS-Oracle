@@ -1,0 +1,19 @@
+{
+  "_comment": "PowerCenter relational/file connection -> IICS connection asset. Edit per environment.",
+  "connections": {
+    "ORA_AML_DW": "CONN_ORA_AML_DW",
+    "FF_AML_INBOUND": "CONN_FF_AML_INBOUND",
+    "FF_AML_OUTBOUND": "CONN_FF_AML_OUTBOUND"
+  },
+  "runtime_environment": "SA_FCRM_LINUX",
+  "project_folder": "AML_FCRM",
+  "parameter_file": {
+    "directory": "/opt/infaagent/apps/Data_Integration_Server/data/userparameters/aml",
+    "name": "aml_nightly.param"
+  },
+  "path_variables": {
+    "$PMSourceFileDir": "$$SRC_FILE_DIR",
+    "$PMTargetFileDir": "$$TGT_FILE_DIR",
+    "$PMRootDir/Scripts": "$$SCRIPT_DIR"
+  }
+}

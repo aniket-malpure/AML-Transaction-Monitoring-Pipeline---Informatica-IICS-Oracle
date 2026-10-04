@@ -1,0 +1,19 @@
+{
+  "assetType": "MTT",
+  "name": "mt_DIM_CUSTOMER_SCD2",
+  "projectFolder": "AML_FCRM/MappingTasks",
+  "mapping": "m_DIM_CUSTOMER_SCD2",
+  "runtimeEnvironment": "SA_FCRM_LINUX",
+  "parameterFile": {
+    "directory": "/opt/infaagent/apps/Data_Integration_Server/data/userparameters/aml",
+    "name": "aml_nightly.param"
+  },
+  "sessionProperties": {
+    "stopOnErrors": 1,
+    "commitInterval": 50000,
+    "preSql": "",
+    "postSql": "UPDATE DIM_CUSTOMER D SET IS_CURRENT='N', EFF_END_DATE=TO_DATE('$$BUSINESS_DATE','YYYYMMDD')-1 WHERE IS_CURRENT='Y' AND EXISTS (SELECT 1 FROM DIM_CUSTOMER N WHERE N.CUSTOMER_ID=D.CUSTOMER_ID AND N.CUSTOMER_KEY>D.CUSTOMER_KEY)",
+    "postProcessingCommand": ""
+  },
+  "schedule": null
+}

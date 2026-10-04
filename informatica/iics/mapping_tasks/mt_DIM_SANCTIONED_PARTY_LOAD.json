@@ -1,0 +1,19 @@
+{
+  "assetType": "MTT",
+  "name": "mt_DIM_SANCTIONED_PARTY_LOAD",
+  "projectFolder": "AML_FCRM/MappingTasks",
+  "mapping": "m_DIM_SANCTIONED_PARTY_LOAD",
+  "runtimeEnvironment": "SA_FCRM_LINUX",
+  "parameterFile": {
+    "directory": "/opt/infaagent/apps/Data_Integration_Server/data/userparameters/aml",
+    "name": "aml_nightly.param"
+  },
+  "sessionProperties": {
+    "stopOnErrors": 1,
+    "commitInterval": 50000,
+    "preSql": "",
+    "postSql": "UPDATE DIM_SANCTIONED_PARTY SET ACTIVE_FLAG='N' WHERE SDN_ID NOT IN (SELECT SDN_ID FROM STG_SANCTIONS WHERE BATCH_ID=$$BATCH_ID)",
+    "postProcessingCommand": ""
+  },
+  "schedule": null
+}

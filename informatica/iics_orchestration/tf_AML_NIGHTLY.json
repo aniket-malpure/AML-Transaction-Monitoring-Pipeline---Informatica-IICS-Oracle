@@ -1,0 +1,75 @@
+{
+  "assetType": "TASKFLOW",
+  "name": "tf_AML_NIGHTLY",
+  "projectFolder": "AML_FCRM/Taskflows",
+  "description": "Nightly AML transaction monitoring chain. Started by scripts/run_aml_batch.sh through the IICS REST API, which passes the batch id and business date it registered in ETL_BATCH_RUN. Steps already SUCCEEDED for the batch are skipped by the shell layer on a restart, so this taskflow is also invoked per step (see 'invocation').",
+  "invocation": {
+    "mode": "API",
+    "endpoint": "/active-bpel/rt/tf_AML_NIGHTLY",
+    "note": "The orchestrator runs each mapping task individually (job API) for step-level restart; this taskflow is the equivalent all-in-one chain used when the scheduler runs inside IICS."
+  },
+  "inputParameters": [
+    { "name": "BATCH_ID",        "type": "integer", "required": true },
+    { "name": "BUSINESS_DATE",   "type": "text",    "required": true, "format": "YYYYMMDD" },
+    { "name": "SRC_FILE_DIR",    "type": "text",    "required": true },
+    { "name": "TGT_FILE_DIR",    "type": "text",    "required": true }
+  ],
+  "steps": [
+    {
+      "name": "PAR_STAGE_FILES",
+      "type": "Parallel",
+      "branches": [
+        { "name": "DT_STG_CUSTOMER_LOAD",      "type": "DataTask", "task": "mt_STG_CUSTOMER_LOAD" },
+        { "name": "DT_STG_ACCOUNT_LOAD",       "type": "DataTask", "task": "mt_STG_ACCOUNT_LOAD" },
+        { "name": "DT_STG_TRANSACTION_LOAD",   "type": "DataTask", "task": "mt_STG_TRANSACTION_LOAD" },
+        { "name": "DT_STG_SANCTIONS_LOAD",     "type": "DataTask", "task": "mt_STG_SANCTIONS_LOAD" },
+        { "name": "DT_STG_COUNTRY_RISK_LOAD",  "type": "DataTask", "task": "mt_STG_COUNTRY_RISK_LOAD" }
+      ],
+      "onError": "Fail"
+    },
+    {
+      "name": "SQL_VALIDATE_STAGING",
+      "type": "DataTask",
+      "task": "mt_SQL_CALL_PROCEDURE",
+      "inputParameters": { "$$PROC_CALL": "pkg_load_dw.validate_staging({{BATCH_ID}})" },
+      "onError": "Fail"
+    },
+    {
+      "name": "PAR_REFERENCE_DIMS",
+      "type": "Parallel",
+      "branches": [
+        { "name": "DT_DIM_COUNTRY_LOAD",          "type": "DataTask", "task": "mt_DIM_COUNTRY_LOAD" },
+        { "name": "DT_DIM_SANCTIONED_PARTY_LOAD", "type": "DataTask", "task": "mt_DIM_SANCTIONED_PARTY_LOAD" }
+      ],
+      "onError": "Fail"
+    },
+    { "name": "DT_DIM_CUSTOMER_SCD2",     "type": "DataTask", "task": "mt_DIM_CUSTOMER_SCD2",     "onError": "Fail" },
+    { "name": "DT_DIM_ACCOUNT_LOAD",      "type": "DataTask", "task": "mt_DIM_ACCOUNT_LOAD",      "onError": "Fail" },
+    { "name": "DT_FACT_TRANSACTION_LOAD", "type": "DataTask", "task": "mt_FACT_TRANSACTION_LOAD", "onError": "Fail" },
+    { "name": "DT_AML_RULE_EXECUTION",    "type": "DataTask", "task": "mt_AML_RULE_EXECUTION",    "onError": "Fail" },
+    {
+      "name": "DEC_ANY_ALERTS",
+      "type": "Decision",
+      "condition": "{{DT_AML_RULE_EXECUTION.Success_Target_Rows}} > 0",
+      "ifTrue":  [ { "name": "DT_OUT_AML_ALERT_EXTRACT", "type": "DataTask", "task": "mt_OUT_AML_ALERT_EXTRACT" } ],
+      "ifFalse": [ { "name": "ASSIGN_NO_ALERTS", "type": "Assignment", "set": { "ALERT_EXTRACT": "SKIPPED_NO_ALERTS" } } ]
+    },
+    {
+      "name": "NOTIFY_SUCCESS",
+      "type": "Notification",
+      "to": ["fcrm-data-ops@example.com"],
+      "subject": "AML nightly {{BUSINESS_DATE}} batch {{BATCH_ID}} SUCCEEDED"
+    }
+  ],
+  "faultHandling": {
+    "onAnyFailure": [
+      {
+        "name": "NOTIFY_FAILURE",
+        "type": "Notification",
+        "to": ["fcrm-data-ops@example.com"],
+        "subject": "AML nightly {{BUSINESS_DATE}} batch {{BATCH_ID}} FAILED at {{$fault.stepName}}"
+      }
+    ],
+    "suspendOnFault": false
+  }
+}

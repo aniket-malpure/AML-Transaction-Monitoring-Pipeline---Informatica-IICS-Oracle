@@ -1,0 +1,358 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_STG_CUSTOMER_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_STG_CUSTOMER_LOAD.xml (m_STG_CUSTOMER_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_NAME",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_customers",
+      "type": "Source",
+      "connection": "CONN_FF_AML_INBOUND",
+      "properties": {
+        "format": {
+          "type": "Delimited",
+          "delimiter": "|",
+          "headerLines": 1,
+          "textQualifier": "None"
+        },
+        "fileDirectory": "$$SRC_FILE_DIR/aml/inbound",
+        "fileName": "customers_$$BUSINESS_DATE.dat"
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DATE_OF_BIRTH",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "STATE_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING_IN",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PEP_FLAG_IN",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ONBOARD_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_STANDARDIZE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "CUSTOMER_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DATE_OF_BIRTH",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "STATE_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "KYC_RISK_RATING_IN",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "PEP_FLAG_IN",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "ONBOARD_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "LTRIM(RTRIM(CUSTOMER_NAME_IN))"
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "string",
+          "precision": 10,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "UPPER(LTRIM(RTRIM(KYC_RISK_RATING_IN)))"
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "IIF(ISNULL(PEP_FLAG_IN) OR PEP_FLAG_IN = '', 'N', UPPER(PEP_FLAG_IN))"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$SRC_FILE_NAME"
+        }
+      ]
+    },
+    {
+      "name": "TGT_STG_CUSTOMER",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "STG_CUSTOMER",
+        "truncateTarget": true
+      },
+      "fields": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_TYPE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "DATE_OF_BIRTH",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "STATE_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "KYC_RISK_RATING",
+          "type": "varchar2",
+          "precision": 10,
+          "scale": 0
+        },
+        {
+          "name": "PEP_FLAG",
+          "type": "varchar2",
+          "precision": 1,
+          "scale": 0
+        },
+        {
+          "name": "ONBOARD_DATE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_customers",
+      "to": "EXP_STANDARDIZE"
+    },
+    {
+      "from": "EXP_STANDARDIZE",
+      "to": "TGT_STG_CUSTOMER"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_STANDARDIZE.CUSTOMER_ID",
+      "to": "CUSTOMER_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.CUSTOMER_TYPE",
+      "to": "CUSTOMER_TYPE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.DATE_OF_BIRTH",
+      "to": "DATE_OF_BIRTH"
+    },
+    {
+      "from": "EXP_STANDARDIZE.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.STATE_CODE",
+      "to": "STATE_CODE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.ONBOARD_DATE",
+      "to": "ONBOARD_DATE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.CUSTOMER_NAME",
+      "to": "CUSTOMER_NAME"
+    },
+    {
+      "from": "EXP_STANDARDIZE.KYC_RISK_RATING",
+      "to": "KYC_RISK_RATING"
+    },
+    {
+      "from": "EXP_STANDARDIZE.PEP_FLAG",
+      "to": "PEP_FLAG"
+    },
+    {
+      "from": "EXP_STANDARDIZE.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.SRC_FILE_NAME",
+      "to": "SRC_FILE_NAME"
+    }
+  ]
+}

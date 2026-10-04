@@ -1,0 +1,28 @@
+{
+  "assetType": "TASKFLOW",
+  "name": "tf_AML_RULE_EXECUTION",
+  "projectFolder": "AML_FCRM/Taskflows",
+  "description": "Converted from PowerCenter workflow wf_AML_RULE_EXECUTION",
+  "inputParameters": [
+    {
+      "name": "BATCH_ID",
+      "type": "text"
+    },
+    {
+      "name": "BUSINESS_DATE",
+      "type": "text"
+    }
+  ],
+  "steps": [
+    {
+      "name": "DT_AML_RULE_EXECUTION",
+      "type": "DataTask",
+      "task": "mt_AML_RULE_EXECUTION",
+      "onError": "Fail",
+      "inputParameters": {
+        "$$BATCH_ID": "{{BATCH_ID}}",
+        "$$BUSINESS_DATE": "{{BUSINESS_DATE}}"
+      }
+    }
+  ]
+}

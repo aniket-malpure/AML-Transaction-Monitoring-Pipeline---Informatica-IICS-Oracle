@@ -1,0 +1,210 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_DIM_ACCOUNT_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_DIM_ACCOUNT_LOAD.xml (m_DIM_ACCOUNT_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_STG_ACCOUNT",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "STG_ACCOUNT",
+        "filter": "STG_ACCOUNT.BATCH_ID = $$BATCH_ID"
+      },
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PRODUCT_TYPE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_DORMANT_FLAG",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PRODUCT_TYPE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "v_IDLE_DAYS",
+          "type": "integer",
+          "precision": 10,
+          "scale": 0,
+          "portType": "VARIABLE",
+          "expression": ":LKP.LKP_RULE_INACTIVITY_DAYS('DORMANT_REACTIVATION')"
+        },
+        {
+          "name": "DORMANT_FLAG",
+          "type": "string",
+          "precision": 1,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "IIF(DATE_DIFF(TO_DATE($$BUSINESS_DATE,'YYYYMMDD'), TO_DATE(LAST_ACTIVITY_DATE,'YYYY-MM-DD'), 'DD') > v_IDLE_DAYS, 'Y', 'N')"
+        }
+      ]
+    },
+    {
+      "name": "TGT_DIM_ACCOUNT",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Upsert",
+        "object": "DIM_ACCOUNT",
+        "truncateTarget": false
+      },
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "PRODUCT_TYPE",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "ACCOUNT_STATUS",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "DORMANT_FLAG",
+          "type": "char",
+          "precision": 1,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_STG_ACCOUNT",
+      "to": "EXP_DORMANT_FLAG"
+    },
+    {
+      "from": "EXP_DORMANT_FLAG",
+      "to": "TGT_DIM_ACCOUNT"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "UPD_ACCOUNT.ACCOUNT_ID",
+      "to": "ACCOUNT_ID"
+    },
+    {
+      "from": "UPD_ACCOUNT.CUSTOMER_ID",
+      "to": "CUSTOMER_ID"
+    },
+    {
+      "from": "UPD_ACCOUNT.PRODUCT_TYPE",
+      "to": "PRODUCT_TYPE"
+    },
+    {
+      "from": "UPD_ACCOUNT.ACCOUNT_STATUS",
+      "to": "ACCOUNT_STATUS"
+    },
+    {
+      "from": "UPD_ACCOUNT.LAST_ACTIVITY_DATE",
+      "to": "LAST_ACTIVITY_DATE"
+    },
+    {
+      "from": "UPD_ACCOUNT.DORMANT_FLAG",
+      "to": "DORMANT_FLAG"
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_STG_SANCTIONS_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_STG_SANCTIONS_LOAD.xml (m_STG_SANCTIONS_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_NAME",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_sanctions_list",
+      "type": "Source",
+      "connection": "CONN_FF_AML_INBOUND",
+      "properties": {
+        "format": {
+          "type": "Delimited",
+          "delimiter": "|",
+          "headerLines": 1,
+          "textQualifier": "None"
+        },
+        "fileDirectory": "$$SRC_FILE_DIR/aml/inbound",
+        "fileName": "sanctions_list_$$BUSINESS_DATE.dat"
+      },
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "string",
+          "precision": 40,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_STANDARDIZE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "string",
+          "precision": 40,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "LTRIM(RTRIM(PARTY_NAME_IN))"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$SRC_FILE_NAME"
+        }
+      ]
+    },
+    {
+      "name": "TGT_STG_SANCTIONS",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "STG_SANCTIONS",
+        "truncateTarget": true
+      },
+      "fields": [
+        {
+          "name": "SDN_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "PARTY_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "PARTY_TYPE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "COUNTRY_CODE",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "LIST_SOURCE",
+          "type": "varchar2",
+          "precision": 40,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_sanctions_list",
+      "to": "EXP_STANDARDIZE"
+    },
+    {
+      "from": "EXP_STANDARDIZE",
+      "to": "TGT_STG_SANCTIONS"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_STANDARDIZE.SDN_ID",
+      "to": "SDN_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.PARTY_TYPE",
+      "to": "PARTY_TYPE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.COUNTRY_CODE",
+      "to": "COUNTRY_CODE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.LIST_SOURCE",
+      "to": "LIST_SOURCE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.PARTY_NAME",
+      "to": "PARTY_NAME"
+    },
+    {
+      "from": "EXP_STANDARDIZE.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.SRC_FILE_NAME",
+      "to": "SRC_FILE_NAME"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "assetType": "TASKFLOW",
+  "name": "tf_DIM_COUNTRY_LOAD",
+  "projectFolder": "AML_FCRM/Taskflows",
+  "description": "Converted from PowerCenter workflow wf_DIM_COUNTRY_LOAD",
+  "inputParameters": [
+    {
+      "name": "BATCH_ID",
+      "type": "text"
+    },
+    {
+      "name": "BUSINESS_DATE",
+      "type": "text"
+    }
+  ],
+  "steps": [
+    {
+      "name": "DT_DIM_COUNTRY_LOAD",
+      "type": "DataTask",
+      "task": "mt_DIM_COUNTRY_LOAD",
+      "onError": "Fail",
+      "inputParameters": {
+        "$$BATCH_ID": "{{BATCH_ID}}",
+        "$$BUSINESS_DATE": "{{BUSINESS_DATE}}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_STG_ACCOUNT_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_STG_ACCOUNT_LOAD.xml (m_STG_ACCOUNT_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_NAME",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_accounts",
+      "type": "Source",
+      "connection": "CONN_FF_AML_INBOUND",
+      "properties": {
+        "format": {
+          "type": "Delimited",
+          "delimiter": "|",
+          "headerLines": 1,
+          "textQualifier": "None"
+        },
+        "fileDirectory": "$$SRC_FILE_DIR/aml/inbound",
+        "fileName": "accounts_$$BUSINESS_DATE.dat"
+      },
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PRODUCT_TYPE_IN",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "OPEN_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_STATUS_IN",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_STANDARDIZE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PRODUCT_TYPE_IN",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "OPEN_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_STATUS_IN",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "PRODUCT_TYPE",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "UPPER(LTRIM(RTRIM(PRODUCT_TYPE_IN)))"
+        },
+        {
+          "name": "ACCOUNT_STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "DECODE(ACCOUNT_STATUS_IN, 'A', 'ACTIVE', 'C', 'CLOSED', ACCOUNT_STATUS_IN)"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$SRC_FILE_NAME"
+        }
+      ]
+    },
+    {
+      "name": "TGT_STG_ACCOUNT",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "STG_ACCOUNT",
+        "truncateTarget": true
+      },
+      "fields": [
+        {
+          "name": "ACCOUNT_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CUSTOMER_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "PRODUCT_TYPE",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "OPEN_DATE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "ACCOUNT_STATUS",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "LAST_ACTIVITY_DATE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_accounts",
+      "to": "EXP_STANDARDIZE"
+    },
+    {
+      "from": "EXP_STANDARDIZE",
+      "to": "TGT_STG_ACCOUNT"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "EXP_STANDARDIZE.ACCOUNT_ID",
+      "to": "ACCOUNT_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.CUSTOMER_ID",
+      "to": "CUSTOMER_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.OPEN_DATE",
+      "to": "OPEN_DATE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.LAST_ACTIVITY_DATE",
+      "to": "LAST_ACTIVITY_DATE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.PRODUCT_TYPE",
+      "to": "PRODUCT_TYPE"
+    },
+    {
+      "from": "EXP_STANDARDIZE.ACCOUNT_STATUS",
+      "to": "ACCOUNT_STATUS"
+    },
+    {
+      "from": "EXP_STANDARDIZE.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "EXP_STANDARDIZE.SRC_FILE_NAME",
+      "to": "SRC_FILE_NAME"
+    }
+  ]
+}

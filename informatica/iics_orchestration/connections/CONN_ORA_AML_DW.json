@@ -1,0 +1,15 @@
+{
+  "assetType": "Connection",
+  "name": "CONN_ORA_AML_DW",
+  "type": "Oracle",
+  "runtimeEnvironment": "SA_FCRM_LINUX",
+  "properties": {
+    "host": "${ORACLE_HOST}",
+    "port": 1521,
+    "serviceName": "${ORACLE_SERVICE}",
+    "user": "AML_OWNER",
+    "password": "<stored in IICS / secrets manager, never in git>",
+    "codePage": "UTF-8",
+    "schema": "AML_OWNER"
+  }
+}

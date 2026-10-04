@@ -1,0 +1,100 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_AML_RULE_EXECUTION",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_AML_RULE_EXECUTION.xml (m_AML_RULE_EXECUTION)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_DUAL",
+      "type": "Source",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "object": "DUAL",
+        "sourceType": "Query",
+        "query": "SELECT $$BATCH_ID AS BATCH_ID FROM DUAL"
+      },
+      "fields": [
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "SP_RUN_AML_RULES",
+      "type": "SQL",
+      "properties": {
+        "sqlType": "Stored Procedure",
+        "storedProcedure": "PKG_AML_RULES.RUN_ALL",
+        "connection": "CONN_ORA_AML_DW"
+      },
+      "fields": [
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "RETURN_VALUE",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "TGT_ETL_STEP_LOG",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "ETL_STEP_LOG",
+        "truncateTarget": false
+      },
+      "fields": [
+        {
+          "name": "RETURN_VALUE",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_DUAL",
+      "to": "SP_RUN_AML_RULES"
+    },
+    {
+      "from": "SP_RUN_AML_RULES",
+      "to": "TGT_ETL_STEP_LOG"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "SP_RUN_AML_RULES.RETURN_VALUE",
+      "to": "RETURN_VALUE"
+    }
+  ]
+}

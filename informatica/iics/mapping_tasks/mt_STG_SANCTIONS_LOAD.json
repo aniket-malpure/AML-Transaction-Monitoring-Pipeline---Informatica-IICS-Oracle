@@ -1,0 +1,19 @@
+{
+  "assetType": "MTT",
+  "name": "mt_STG_SANCTIONS_LOAD",
+  "projectFolder": "AML_FCRM/MappingTasks",
+  "mapping": "m_STG_SANCTIONS_LOAD",
+  "runtimeEnvironment": "SA_FCRM_LINUX",
+  "parameterFile": {
+    "directory": "/opt/infaagent/apps/Data_Integration_Server/data/userparameters/aml",
+    "name": "aml_nightly.param"
+  },
+  "sessionProperties": {
+    "stopOnErrors": 1,
+    "commitInterval": 50000,
+    "preSql": "",
+    "postSql": "",
+    "postProcessingCommand": ""
+  },
+  "schedule": null
+}

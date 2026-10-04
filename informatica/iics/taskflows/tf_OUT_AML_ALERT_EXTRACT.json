@@ -1,0 +1,33 @@
+{
+  "assetType": "TASKFLOW",
+  "name": "tf_OUT_AML_ALERT_EXTRACT",
+  "projectFolder": "AML_FCRM/Taskflows",
+  "description": "Converted from PowerCenter workflow wf_OUT_AML_ALERT_EXTRACT",
+  "inputParameters": [
+    {
+      "name": "BATCH_ID",
+      "type": "text"
+    },
+    {
+      "name": "BUSINESS_DATE",
+      "type": "text"
+    },
+    {
+      "name": "TGT_FILE_DIR",
+      "type": "text"
+    }
+  ],
+  "steps": [
+    {
+      "name": "DT_OUT_AML_ALERT_EXTRACT",
+      "type": "DataTask",
+      "task": "mt_OUT_AML_ALERT_EXTRACT",
+      "onError": "Fail",
+      "inputParameters": {
+        "$$BATCH_ID": "{{BATCH_ID}}",
+        "$$BUSINESS_DATE": "{{BUSINESS_DATE}}",
+        "$$TGT_FILE_DIR": "{{TGT_FILE_DIR}}"
+      }
+    }
+  ]
+}

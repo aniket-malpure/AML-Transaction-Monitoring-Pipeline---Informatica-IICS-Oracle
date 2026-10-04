@@ -1,0 +1,47 @@
+{
+  "assetType": "TASKFLOW",
+  "name": "tf_STG_TRANSACTION_LOAD",
+  "projectFolder": "AML_FCRM/Taskflows",
+  "description": "Converted from PowerCenter workflow wf_STG_TRANSACTION_LOAD",
+  "inputParameters": [
+    {
+      "name": "BATCH_ID",
+      "type": "text"
+    },
+    {
+      "name": "BUSINESS_DATE",
+      "type": "text"
+    },
+    {
+      "name": "SRC_FILE_NAME",
+      "type": "text"
+    },
+    {
+      "name": "SRC_FILE_DIR",
+      "type": "text"
+    }
+  ],
+  "steps": [
+    {
+      "name": "cmd_validate_control_file",
+      "type": "CommandTask",
+      "runtimeEnvironment": "SA_FCRM_LINUX",
+      "commands": [
+        "$$SCRIPT_DIR/check_ctl_file.sh transactions_$$BUSINESS_DATE.dat"
+      ],
+      "onError": "Fail"
+    },
+    {
+      "name": "DT_STG_TRANSACTION_LOAD",
+      "type": "DataTask",
+      "task": "mt_STG_TRANSACTION_LOAD",
+      "onError": "Fail",
+      "inputParameters": {
+        "$$BATCH_ID": "{{BATCH_ID}}",
+        "$$BUSINESS_DATE": "{{BUSINESS_DATE}}",
+        "$$SRC_FILE_NAME": "{{SRC_FILE_NAME}}",
+        "$$SRC_FILE_DIR": "{{SRC_FILE_DIR}}"
+      }
+    }
+  ]
+}

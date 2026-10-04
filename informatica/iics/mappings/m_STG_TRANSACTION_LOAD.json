@@ -1,0 +1,513 @@
+{
+  "assetType": "MAPPING",
+  "name": "m_STG_TRANSACTION_LOAD",
+  "projectFolder": "AML_FCRM/Mappings",
+  "description": "Converted from PowerCenter wf_STG_TRANSACTION_LOAD.xml (m_STG_TRANSACTION_LOAD)",
+  "parameters": [
+    {
+      "name": "$$BATCH_ID",
+      "type": "integer",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$BUSINESS_DATE",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_NAME",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    },
+    {
+      "name": "$$SRC_FILE_DIR",
+      "type": "string",
+      "usage": "In-Out",
+      "defaultValue": ""
+    }
+  ],
+  "transformations": [
+    {
+      "name": "SRC_transactions",
+      "type": "Source",
+      "connection": "CONN_FF_AML_INBOUND",
+      "properties": {
+        "format": {
+          "type": "Delimited",
+          "delimiter": "|",
+          "headerLines": 1,
+          "textQualifier": "None"
+        },
+        "fileDirectory": "$$SRC_FILE_DIR/aml/inbound",
+        "fileName": "transactions_$$BUSINESS_DATE.dat"
+      },
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TS",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CHANNEL",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DIRECTION",
+          "type": "string",
+          "precision": 2,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT_IN",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CURRENCY_IN",
+          "type": "string",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_COUNTRY",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "EXP_STANDARDIZE",
+      "type": "Expression",
+      "properties": {},
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TS",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CHANNEL",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DIRECTION",
+          "type": "string",
+          "precision": 2,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT_IN",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "CURRENCY_IN",
+          "type": "string",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "COUNTERPARTY_NAME_IN",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT"
+        },
+        {
+          "name": "COUNTERPARTY_COUNTRY",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "IIF(IS_NUMBER(AMOUNT_IN), AMOUNT_IN, NULL)"
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "LTRIM(RTRIM(COUNTERPARTY_NAME_IN))"
+        },
+        {
+          "name": "CURRENCY",
+          "type": "string",
+          "precision": 3,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "IIF(ISNULL(CURRENCY_IN), 'USD', CURRENCY_IN)"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$BATCH_ID"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "OUTPUT",
+          "expression": "$$SRC_FILE_NAME"
+        }
+      ]
+    },
+    {
+      "name": "FIL_VALID_ROWS",
+      "type": "Filter",
+      "properties": {
+        "filterCondition": "NOT ISNULL(TXN_ID) AND NOT ISNULL(ACCOUNT_ID) AND STATUS != 'REVERSED'"
+      },
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TS",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "TXN_TYPE",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CHANNEL",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "DIRECTION",
+          "type": "string",
+          "precision": 2,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "AMOUNT",
+          "type": "string",
+          "precision": 30,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "CURRENCY",
+          "type": "string",
+          "precision": 3,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "COUNTERPARTY_COUNTRY",
+          "type": "string",
+          "precision": 5,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "STATUS",
+          "type": "string",
+          "precision": 20,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "decimal",
+          "precision": 15,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "string",
+          "precision": 200,
+          "scale": 0,
+          "portType": "INPUT/OUTPUT"
+        }
+      ]
+    },
+    {
+      "name": "TGT_STG_TRANSACTION",
+      "type": "Target",
+      "connection": "CONN_ORA_AML_DW",
+      "properties": {
+        "operation": "Insert",
+        "object": "STG_TRANSACTION",
+        "truncateTarget": true,
+        "advanced": {
+          "loadMode": "Bulk"
+        }
+      },
+      "fields": [
+        {
+          "name": "TXN_ID",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "ACCOUNT_ID",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "TXN_TS",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "TXN_TYPE",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "CHANNEL",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "DIRECTION",
+          "type": "varchar2",
+          "precision": 2,
+          "scale": 0
+        },
+        {
+          "name": "AMOUNT",
+          "type": "varchar2",
+          "precision": 30,
+          "scale": 0
+        },
+        {
+          "name": "CURRENCY",
+          "type": "varchar2",
+          "precision": 3,
+          "scale": 0
+        },
+        {
+          "name": "COUNTERPARTY_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        },
+        {
+          "name": "COUNTERPARTY_COUNTRY",
+          "type": "varchar2",
+          "precision": 5,
+          "scale": 0
+        },
+        {
+          "name": "STATUS",
+          "type": "varchar2",
+          "precision": 20,
+          "scale": 0
+        },
+        {
+          "name": "BATCH_ID",
+          "type": "number",
+          "precision": 15,
+          "scale": 0
+        },
+        {
+          "name": "SRC_FILE_NAME",
+          "type": "varchar2",
+          "precision": 200,
+          "scale": 0
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "SRC_transactions",
+      "to": "EXP_STANDARDIZE"
+    },
+    {
+      "from": "EXP_STANDARDIZE",
+      "to": "FIL_VALID_ROWS"
+    },
+    {
+      "from": "FIL_VALID_ROWS",
+      "to": "TGT_STG_TRANSACTION"
+    }
+  ],
+  "targetFieldMapping": [
+    {
+      "from": "FIL_VALID_ROWS.TXN_ID",
+      "to": "TXN_ID"
+    },
+    {
+      "from": "FIL_VALID_ROWS.ACCOUNT_ID",
+      "to": "ACCOUNT_ID"
+    },
+    {
+      "from": "FIL_VALID_ROWS.TXN_TS",
+      "to": "TXN_TS"
+    },
+    {
+      "from": "FIL_VALID_ROWS.TXN_TYPE",
+      "to": "TXN_TYPE"
+    },
+    {
+      "from": "FIL_VALID_ROWS.CHANNEL",
+      "to": "CHANNEL"
+    },
+    {
+      "from": "FIL_VALID_ROWS.DIRECTION",
+      "to": "DIRECTION"
+    },
+    {
+      "from": "FIL_VALID_ROWS.AMOUNT",
+      "to": "AMOUNT"
+    },
+    {
+      "from": "FIL_VALID_ROWS.CURRENCY",
+      "to": "CURRENCY"
+    },
+    {
+      "from": "FIL_VALID_ROWS.COUNTERPARTY_NAME",
+      "to": "COUNTERPARTY_NAME"
+    },
+    {
+      "from": "FIL_VALID_ROWS.COUNTERPARTY_COUNTRY",
+      "to": "COUNTERPARTY_COUNTRY"
+    },
+    {
+      "from": "FIL_VALID_ROWS.STATUS",
+      "to": "STATUS"
+    },
+    {
+      "from": "FIL_VALID_ROWS.BATCH_ID",
+      "to": "BATCH_ID"
+    },
+    {
+      "from": "FIL_VALID_ROWS.SRC_FILE_NAME",
+      "to": "SRC_FILE_NAME"
+    }
+  ]
+}

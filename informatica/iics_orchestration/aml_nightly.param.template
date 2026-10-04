@@ -1,0 +1,26 @@
+#USE_SECTIONS
+# IICS parameter file for the AML nightly chain.
+# scripts/lib/iics.sh renders this template per run (envsubst) and uploads it
+# to the Secure Agent userparameters directory before any task starts.
+
+[Global]
+$$BATCH_ID=${BATCH_ID}
+$$BUSINESS_DATE=${BUSINESS_DATE}
+$$SRC_FILE_DIR=${AML_INBOUND_DIR}
+$$TGT_FILE_DIR=${AML_OUTBOUND_DIR}
+$$SCRIPT_DIR=${AML_HOME}/scripts
+
+[AML_FCRM].[MappingTasks].[mt_STG_CUSTOMER_LOAD]
+$$SRC_FILE_NAME=customers_${BUSINESS_DATE}.dat
+
+[AML_FCRM].[MappingTasks].[mt_STG_ACCOUNT_LOAD]
+$$SRC_FILE_NAME=accounts_${BUSINESS_DATE}.dat
+
+[AML_FCRM].[MappingTasks].[mt_STG_TRANSACTION_LOAD]
+$$SRC_FILE_NAME=transactions_${BUSINESS_DATE}.dat
+
+[AML_FCRM].[MappingTasks].[mt_STG_SANCTIONS_LOAD]
+$$SRC_FILE_NAME=sanctions_list_${BUSINESS_DATE}.dat
+
+[AML_FCRM].[MappingTasks].[mt_STG_COUNTRY_RISK_LOAD]
+$$SRC_FILE_NAME=country_risk_${BUSINESS_DATE}.dat

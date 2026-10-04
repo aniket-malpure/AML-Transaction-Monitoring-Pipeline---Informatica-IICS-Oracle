@@ -1,0 +1,7 @@
+{
+  "assetType": "Connection",
+  "name": "CONN_FF_AML_INBOUND",
+  "type": "Flat File",
+  "runtimeEnvironment": "SA_FCRM_LINUX",
+  "properties": { "directory": "/data/aml/inbound", "dateFormat": "YYYY-MM-DD", "codePage": "UTF-8" }
+}
